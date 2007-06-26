@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 /**
- * @author Tony 2007-6-25
+ * @author lixuefeng 2007-6-25
  */
 public class PointMatrix {
 

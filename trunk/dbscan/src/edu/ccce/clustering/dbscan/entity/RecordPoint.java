@@ -4,7 +4,7 @@
 package edu.ccce.clustering.dbscan.entity;
 
 /**
- * @author Tony 2007-6-25
+ * @author lixuefeng 2007-6-25
  */
 public class RecordPoint {
 	String ID = "0";
