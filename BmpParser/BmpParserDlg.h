@@ -11,7 +11,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // CBmpParserDlg dialog
 
-#define DB_FILE_HEADER		"ID\tx\ty\tr\tg\tb\tcls\r\n"
+#define DB_FILE_W_H       "%u\t%u\r\n"
+#define DB_FILE_HEADER		"PID\tx\ty\tr\tg\tb\tcls\r\n"
 #define DB_FILE_RECORD		"%u\t%u\t%u\t%u\t%u\t%u\t%d\r\n"
 
 class CBmpParserDlg : public CDialog
@@ -53,6 +54,7 @@ protected:
 	afx_msg void OnImportFile();
 	afx_msg void OnExportFile();
 	afx_msg void OnOpenDbFile();
+	afx_msg void OnBtnRefresh();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
