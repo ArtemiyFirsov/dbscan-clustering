@@ -10,7 +10,7 @@ public class RecordPoint {
 	
 	public static int DEFAULT_CLUSTER = -1;
 	
-	public String ID = "0";
+	public int ID = 0;
 	public int x = 0;
 	public int y = 0;
 	public short r = 0;
@@ -18,7 +18,18 @@ public class RecordPoint {
 	public short b = 0;
 	public int cls = DEFAULT_CLUSTER;	
 	
+	protected static int[]  pixels = null;
 	
+	
+	public static void setPixels(int[] p){
+		pixels = p;
+	}
+	public void setRGB(int rgb){
+		pixels[ID] = rgb;
+	}
+	public int getRGB(){
+		return pixels[ID];
+	}
 	
 	/**
 	 * @param from	the point from
@@ -53,7 +64,7 @@ public class RecordPoint {
 	 * @param b
 	 * @param cls
 	 */
-	protected RecordPoint(String id, int x, int y, short r, short g, short b) {
+	protected RecordPoint(int id, int x, int y, short r, short g, short b) {
 		super();
 		ID = id;
 		this.x = x;
