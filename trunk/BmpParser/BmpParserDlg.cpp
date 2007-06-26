@@ -16,6 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 HBITMAP m_hBitmap = NULL;
 CString m_dbFile = "default.db";
+CString DBFileName;
 
 void errhandler(CString msg,HWND hdl){
 	MessageBox(hdl,msg,"errhandler",IDOK);
@@ -238,6 +239,7 @@ BEGIN_MESSAGE_MAP(CBmpParserDlg, CDialog)
 	ON_BN_CLICKED(ID_IMPORT_FILE, OnImportFile)
 	ON_BN_CLICKED(ID_EXPORT_FILE, OnExportFile)
 	ON_BN_CLICKED(IDC_OPEN_DB_FILE, OnOpenDbFile)
+	ON_BN_CLICKED(IDC_BTN_REFRESH, OnBtnRefresh)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -421,6 +423,7 @@ void CBmpParserDlg::SaveBitMapToDB(CString dbFile){
 	if(fp != NULL){
 		ULONG ID = 0;
 		//"ID\tx\ty\tr\tg\tb\tcls\r\n"
+    fprintf(fp,DB_FILE_W_H,width,height);
 		fprintf(fp,DB_FILE_HEADER);
 
 		for(int h = 0;h < height;h++){
@@ -451,6 +454,7 @@ void CBmpParserDlg::doRefreshFromDB(CString dbFile,int cluster)
 		HDC hdc;
 
 		hwnd=GetDlgItem(IDC_PIC);//位图要显示的位置（picture控件）
+    hwnd->RedrawWindow();
 		hdc=hwnd->GetDC()->m_hDC;
 
 		FILE *fp = NULL;
@@ -458,16 +462,22 @@ void CBmpParserDlg::doRefreshFromDB(CString dbFile,int cluster)
 		if(fp != NULL){
 			char header[64] = {0x0};
 			fgets(header,64,fp);
+      fgets(header,64,fp);
 			while(!feof(fp)){
 				ULONG ID = 0;
 				int w,h,r,g,b,cls;
 				fscanf(fp,DB_FILE_RECORD,&ID,&w,&h,&r,&g,&b,&cls);
-				
+        char szCls[10] = {0x0};
+
 				COLORREF color = 0;
-				if(cluster == cls || cluster == -1)
-					color = RGB(r,g,b);
+        if(cluster == cls || cluster == -1){
+          color = RGB(r,g,b);
+          itoa(cls,szCls,10);
+          if(m_cmb_cluster.FindString(0,szCls) == -1)
+            m_cmb_cluster.AddString(szCls);
+        }
 				else
-					color = RGB(0,0,0);
+					color = RGB(255,255,255);
 				::SetPixel(hdc,w,h,color);
 			}
 		}
@@ -481,7 +491,22 @@ void CBmpParserDlg::OnOpenDbFile()
 	dbFileDlg.m_ofn.lpstrTitle = _T("载入位图文件");
 
 	if(dbFileDlg.DoModal() == IDOK){
-		CString DBFileName = dbFileDlg.GetPathName();
-		doRefreshFromDB(DBFileName,-1);
+		DBFileName = dbFileDlg.GetPathName();
+    //int cur = m_cmb_cluster.GetCurSel()
+    int cls = -1;
+    doRefreshFromDB(DBFileName,cls);
 	}
+}
+
+void CBmpParserDlg::OnBtnRefresh() 
+{
+	 int cls = -1;
+   if(m_cmb_cluster.GetCount() > 0){
+     
+     CString strCls;
+     m_cmb_cluster.GetWindowText(strCls);
+     cls = atoi(strCls);
+   }
+   doRefreshFromDB(DBFileName,cls);
+	
 }
