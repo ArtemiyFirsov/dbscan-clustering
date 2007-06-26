@@ -10,13 +10,13 @@ public class RecordPoint {
 	
 	public static int DEFAULT_CLUSTER = -1;
 	
-	String ID = "0";
-	int x = 0;
-	int y = 0;
-	short r = 0;
-	short g = 0;
-	short b = 0;
-	int cls = DEFAULT_CLUSTER;	
+	public String ID = "0";
+	public int x = 0;
+	public int y = 0;
+	public short r = 0;
+	public short g = 0;
+	public short b = 0;
+	public int cls = DEFAULT_CLUSTER;	
 	
 	
 	
@@ -69,7 +69,7 @@ public class RecordPoint {
 	 * @param id
 	 * @param r
 	 */
-	protected RecordPoint() {
+	public RecordPoint() {
 		super();
 	}
 }

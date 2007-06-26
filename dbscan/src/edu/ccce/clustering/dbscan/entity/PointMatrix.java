@@ -23,22 +23,22 @@ public class PointMatrix {
 	/**
 	 * save all the point 
 	 */
-	private LinkedHashMap<String,RecordPoint> points = new LinkedHashMap<String,RecordPoint>();
+	private ArrayList<RecordPoint> points = new ArrayList<RecordPoint>();
 	
 	/**
 	 *  keep the all the close points 
 	 */
-	private LinkedHashMap<String,ArrayList<RecordPoint>> matrix = new LinkedHashMap<String,ArrayList<RecordPoint>>();
+	private LinkedHashMap<RecordPoint,ArrayList<RecordPoint>> matrix = new LinkedHashMap<RecordPoint,ArrayList<RecordPoint>>();
 	
 	
 	/**
 	 *  keep all the core point 
 	 */
-	private ArrayList<String> corePointList = new ArrayList<String>();
+	private ArrayList<RecordPoint> corePointList = new ArrayList<RecordPoint>();
 	
 	
 	
-	public LinkedHashMap<String,RecordPoint> dumpPoints(){
+	public ArrayList<RecordPoint> dumpPoints(){
 		return points;		
 	}
 	/**
@@ -47,19 +47,19 @@ public class PointMatrix {
 	 * 
 	 *  add a point to matrix
 	 */
-	private void addPoint(String from,RecordPoint toPoint){
+	private void addPoint(RecordPoint fromPoint,RecordPoint toPoint){
 		// add to martix
 		ArrayList<RecordPoint> neighborPoints = null;
-		neighborPoints = matrix.get(from);
+		neighborPoints = matrix.get(fromPoint);
 		if(neighborPoints == null){
 			neighborPoints = new ArrayList<RecordPoint>();
-			matrix.put(from, neighborPoints);
+			matrix.put(fromPoint, neighborPoints);
 		}
 		neighborPoints.add(toPoint);
 		
 		//	if some point has more than n neighbor,then put it to corePointList
-		if(neighborPoints.size() > n_neighbor){
-			corePointList.add(from);	
+		if(neighborPoints.size() > n_neighbor && corePointList.contains(fromPoint) == false){
+			corePointList.add(fromPoint);	
 		}
 	}
 	
@@ -70,15 +70,17 @@ public class PointMatrix {
 	 */
 	public void pushPoint(RecordPoint point){
 		// first,push this point to pool
-		points.put(point.ID,point);
+		points.add(point);
 		
 		// second, calculate the distance from this point,and add it to matrix if the distance is smaller then e
-		for(RecordPoint oldPoint:points.values()){
+		for(RecordPoint oldPoint:points){
+			if(oldPoint.ID.equalsIgnoreCase(point.ID) == true)
+				continue;
 			double distance = RecordPoint.calculateDiscance(oldPoint, point, width, height);
-			if(e_distance < distance){
+			if(e_distance > distance){
 				// double add
-				addPoint(oldPoint.ID,point);
-				addPoint(point.ID,oldPoint);
+				addPoint(oldPoint,point);
+				addPoint(point,oldPoint);
 			}
 		}
 	}
@@ -89,22 +91,20 @@ public class PointMatrix {
 	 */
 	public void joinCorePoint(){
 		// dye all the core point
-		for(String corePoint:corePointList){
-			RecordPoint core = points.get(corePoint);
-			if(core.cls == RecordPoint.DEFAULT_CLUSTER){	// lonely core point
-				core.cls = clusterID ++;
+		for(RecordPoint corePoint:corePointList){
+			if(corePoint.cls == RecordPoint.DEFAULT_CLUSTER){	// lonely core point
+				corePoint.cls = clusterID ++;
 			}
-			dyeing(core);
+			dyeing(corePoint);
 		}
 	}
 	/**
 	 * @param core
 	 * 	dye all the core object by core point
 	 */
-	private void dyeing(RecordPoint core){
-		String coreID = core.ID;
-		int    coreCluster = core.cls; 
-		ArrayList<RecordPoint> neighborPoints = matrix.get(coreID);
+	private void dyeing(RecordPoint corePoint){
+		int coreCluster = corePoint.cls; 
+		ArrayList<RecordPoint> neighborPoints = matrix.get(corePoint);
 		for(RecordPoint neighborPoint:neighborPoints){
 			neighborPoint.cls = coreCluster;
 		}
@@ -134,5 +134,17 @@ public class PointMatrix {
 	 */
 	public final void setWidth(double width) {
 		this.width = width;
+	}
+	/**
+	 * @return the height
+	 */
+	public final double getHeight() {
+		return height;
+	}
+	/**
+	 * @return the width
+	 */
+	public final double getWidth() {
+		return width;
 	}
 }
