@@ -7,13 +7,16 @@ package edu.ccce.clustering.dbscan.entity;
  * @author lixuefeng 2007-6-25
  */
 public class RecordPoint {
+	
+	public static int DEFAULT_CLUSTER = -1;
+	
 	String ID = "0";
 	int x = 0;
 	int y = 0;
 	short r = 0;
 	short g = 0;
 	short b = 0;
-	int cls = -1;	
+	int cls = DEFAULT_CLUSTER;	
 	
 	
 	
@@ -58,7 +61,6 @@ public class RecordPoint {
 		this.r = r;
 		this.g = g;
 		this.b = b;
-		cls = -1;
 	}
 
 
@@ -69,6 +71,5 @@ public class RecordPoint {
 	 */
 	protected RecordPoint() {
 		super();
-		cls = -1;
 	}
 }
