@@ -16,9 +16,11 @@ public class PointMatrix {
 	int	   clusterID = START_CLUSTER;
 	double width = 1024;
 	double height = 768;
-	double e_distance = 1.5;
+	double e_distance = 0.1;
 	int	   n_neighbor = 5;
 	
+	
+	int backgroud_flag = 0;
 	
 	/**
 	 * save all the point 
@@ -74,11 +76,12 @@ public class PointMatrix {
 		
 		// second, calculate the distance from this point,and add it to matrix if the distance is smaller then e
 		for(RecordPoint oldPoint:points){
-			if(oldPoint.ID.equalsIgnoreCase(point.ID) == true)
+			if(oldPoint.ID == point.ID)
 				continue;
 			double distance = RecordPoint.calculateDiscance(oldPoint, point, width, height);
 			if(e_distance > distance){
 				// double add
+				//System.out.println("dis:" + distance);
 				addPoint(oldPoint,point);
 				addPoint(point,oldPoint);
 			}
@@ -92,21 +95,25 @@ public class PointMatrix {
 	public void joinCorePoint(){
 		// dye all the core point
 		for(RecordPoint corePoint:corePointList){
+			int rgb = corePoint.getRGB();
 			if(corePoint.cls == RecordPoint.DEFAULT_CLUSTER){	// lonely core point
 				corePoint.cls = clusterID ++;
+				rgb = generateRandomRGB();
 			}
-			dyeing(corePoint);
+			dyeing(corePoint,rgb);
 		}
 	}
 	/**
 	 * @param core
 	 * 	dye all the core object by core point
 	 */
-	private void dyeing(RecordPoint corePoint){
-		int coreCluster = corePoint.cls; 
+	private void dyeing(RecordPoint corePoint,int rgb){
+		int coreCluster = corePoint.cls;
+		corePoint.setRGB(rgb);		
 		ArrayList<RecordPoint> neighborPoints = matrix.get(corePoint);
 		for(RecordPoint neighborPoint:neighborPoints){
 			neighborPoint.cls = coreCluster;
+			neighborPoint.setRGB(rgb);
 		}
 	}
 	
@@ -146,5 +153,24 @@ public class PointMatrix {
 	 */
 	public final double getWidth() {
 		return width;
+	}
+	
+	public int generateRandomRGB(){
+		
+		if(backgroud_flag == 0){
+			backgroud_flag = 1;
+			return 0xffffffff;
+		}
+		
+		int r = (int) Math.round(Math.random()/1.0 *255);
+		int g = (int) Math.round(Math.random()/1.0 *255);
+		int b = (int) Math.round(Math.random()/1.0 *255);
+		int rgb = 0xff000000;
+		
+		rgb |= ((r << 16) & 0xff0000);
+		rgb |= ((g << 8) & 0xff00);
+		rgb |= (b & 0xff);
+		
+		return rgb;
 	}
 }
