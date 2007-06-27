@@ -32,8 +32,12 @@ import edu.ccce.clustering.dbscan.entity.RecordPoint;
  */
 public class mainentry {
 
-	public static String inputFileName = "D:\\MyDocuments\\DBScan_Doc\\test6.gif";
-	public static String outputFileName = "D:\\MyDocuments\\DBScan_Doc\\test6_out.jpeg";
+	public static String inputFileName = "D:\\MyDocuments\\DBScan_Doc\\test9.gif";
+	public static String outputFileName = "D:\\MyDocuments\\DBScan_Doc\\test9_out.jpeg";
+	
+	public static int    n_neighbor =  5;
+	public static double e_distance = 0.0285;
+	
 	/**
 	 * @param args
 	 */
@@ -92,8 +96,8 @@ public class mainentry {
 		
 		ptMatrix.setWidth(width);
 		ptMatrix.setHeight(height);
-		ptMatrix.setN_neighbor(7);
-		ptMatrix.setE_distance(0.05);
+		ptMatrix.setN_neighbor(n_neighbor);
+		ptMatrix.setE_distance(e_distance);
 		RecordPoint.setPixels(pixels);
 		int id = 0;
 		for(int w = 0;w < width;w ++){

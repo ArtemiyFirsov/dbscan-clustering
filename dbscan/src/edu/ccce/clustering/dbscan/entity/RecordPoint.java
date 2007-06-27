@@ -9,7 +9,7 @@ package edu.ccce.clustering.dbscan.entity;
 public class RecordPoint {
 	
 	public static int DEFAULT_CLUSTER = -1;
-	
+	public static int BACKGROUND_RGB = 0xffffffff;
 	public int ID = 0;
 	public int x = 0;
 	public int y = 0;
@@ -20,6 +20,11 @@ public class RecordPoint {
 	
 	protected static int[]  pixels = null;
 	
+	public boolean isBackGround(){
+		if(pixels[ID] == BACKGROUND_RGB)
+			return true;
+		return false;
+	}
 	
 	public static void setPixels(int[] p){
 		pixels = p;

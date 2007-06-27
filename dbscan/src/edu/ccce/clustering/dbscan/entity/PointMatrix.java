@@ -72,6 +72,10 @@ public class PointMatrix {
 	 */
 	public void pushPoint(RecordPoint point){
 		// first,push this point to pool
+		
+		if(point.isBackGround() == true)		// skip background point.
+			return;
+		
 		points.add(point);
 		
 		// second, calculate the distance from this point,and add it to matrix if the distance is smaller then e
@@ -157,10 +161,10 @@ public class PointMatrix {
 	
 	public int generateRandomRGB(){
 		
-		if(backgroud_flag == 0){
-			backgroud_flag = 1;
-			return 0xffffffff;
-		}
+//		if(backgroud_flag == 0){
+//			backgroud_flag = 1;
+//			return 0xffffffff;
+//		}
 		
 		int r = (int) Math.round(Math.random()/1.0 *255);
 		int g = (int) Math.round(Math.random()/1.0 *255);
