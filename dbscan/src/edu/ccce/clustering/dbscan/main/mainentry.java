@@ -8,35 +8,30 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import edu.ccce.clustering.dbscan.entity.PointMatrix;
-import edu.ccce.clustering.dbscan.entity.RecordPoint;
+import edu.ccce.clustering.dbscan.entity.RecordPointUtil;
 
 /**
  * @author lixuefeng 2007-6-25
  */
 public class mainentry {
 
-	public static String inputFileName = "D:\\MyDocuments\\DBScan_Doc\\test9.gif";
-	public static String outputFileName = "D:\\MyDocuments\\DBScan_Doc\\test9_out.jpeg";
+	public static String inputFileName = "D:\\MyDocuments\\DBScan_Doc\\test15.gif";
+	public static String outputFileName = "D:\\MyDocuments\\DBScan_Doc\\test15_out.jpeg";
 	
-	public static int    n_neighbor =  5;
-	public static double e_distance = 0.0285;
+	public static int    n_neighbor =  10;
+	public static double e_distance = 0.023;
+	public static boolean bColorData = false;
+	public static long	  current_cost = 0;
 	
 	/**
 	 * @param args
@@ -93,31 +88,21 @@ public class mainentry {
 			 return;
 		 }
 	 
-		
+		long start = System.currentTimeMillis();
+		 
+		 
 		ptMatrix.setWidth(width);
 		ptMatrix.setHeight(height);
 		ptMatrix.setN_neighbor(n_neighbor);
 		ptMatrix.setE_distance(e_distance);
-		RecordPoint.setPixels(pixels);
-		int id = 0;
+		RecordPointUtil.setPixels(pixels);
+		RecordPointUtil.setBColorData(bColorData);
+		int pointID = 0;
 		for(int w = 0;w < width;w ++){
 			 for(int h = 0;h < height;h ++){
-				 int pixel = pixels[id];
-				 int alpha = (pixel >> 24) & 0xff;
-				 int red = (pixel >> 16) & 0xff;
-				 int green = (pixel >> 8) & 0xff;
-				 int blue = (pixel) & 0xff;
-				 
-				RecordPoint recordPoint = new RecordPoint();
-				recordPoint.ID = id ;
-				recordPoint.x = w;
-				recordPoint.y = h;
-				recordPoint.r = (short)red;
-				recordPoint.g = (short)green;
-				recordPoint.b = (short)blue;
-				ptMatrix.pushPoint(recordPoint);
-				System.out.println(id);
-				id++;
+				ptMatrix.pushPoint(pointID);
+				System.out.println(pointID);
+				pointID++;
 			 }
 		 }
 		
@@ -173,12 +158,14 @@ public class mainentry {
 		
 		
 		
+		
 		System.out.println("----------------------------->write output");
 		
 		
-	
-	
-	
+		
+		
+		
+		
 
 		try {
 			File outputFile = new File(outputFileName);
@@ -204,6 +191,10 @@ public class mainentry {
 			e1.printStackTrace();
 		}
 		
+		long end = System.currentTimeMillis();
+		current_cost = end - start;
+		
+		System.out.println("----------------------------->Finished !Total Cost :"  + current_cost +  " Millis");
 		
 
 		
@@ -241,7 +232,7 @@ public class mainentry {
 //			e.printStackTrace();
 //		}
 		
-		System.out.println("----------------------------->finished output");
+		
 
 	}
 

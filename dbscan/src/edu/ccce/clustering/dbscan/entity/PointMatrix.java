@@ -10,51 +10,39 @@ import java.util.LinkedHashMap;
  * @author lixuefeng 2007-6-25
  */
 public class PointMatrix {
-
-	public static int START_CLUSTER = 1;
-	
-	int	   clusterID = START_CLUSTER;
-	double width = 1024;
-	double height = 768;
-	double e_distance = 0.1;
-	int	   n_neighbor = 5;
-	
-	
-	int backgroud_flag = 0;
-	
+	double width = 1024;		// default
+	double height = 768;		// default
+	double e_distance = 0.1;	// default
+	int	   n_neighbor = 5;	// default
+		
 	/**
 	 * save all the point 
 	 */
-	private ArrayList<RecordPoint> points = new ArrayList<RecordPoint>();
+	private ArrayList<Integer> points = new ArrayList<Integer>();
 	
 	/**
 	 *  keep the all the close points 
 	 */
-	private LinkedHashMap<RecordPoint,ArrayList<RecordPoint>> matrix = new LinkedHashMap<RecordPoint,ArrayList<RecordPoint>>();
+	private LinkedHashMap<Integer,ArrayList<Integer>> matrix = new LinkedHashMap<Integer,ArrayList<Integer>>();
 	
 	
 	/**
 	 *  keep all the core point 
 	 */
-	private ArrayList<RecordPoint> corePointList = new ArrayList<RecordPoint>();
-	
-	
-	
-	public ArrayList<RecordPoint> dumpPoints(){
-		return points;		
-	}
+	private ArrayList<Integer> corePointList = new ArrayList<Integer>();
+
 	/**
 	 * @param from
 	 * @param toPoint
 	 * 
 	 *  add a point to matrix
 	 */
-	private void addPoint(RecordPoint fromPoint,RecordPoint toPoint){
+	private void addPoint(Integer fromPoint,Integer toPoint){
 		// add to martix
-		ArrayList<RecordPoint> neighborPoints = null;
+		ArrayList<Integer> neighborPoints = null;
 		neighborPoints = matrix.get(fromPoint);
 		if(neighborPoints == null){
-			neighborPoints = new ArrayList<RecordPoint>();
+			neighborPoints = new ArrayList<Integer>();
 			matrix.put(fromPoint, neighborPoints);
 		}
 		neighborPoints.add(toPoint);
@@ -70,26 +58,26 @@ public class PointMatrix {
 	 * 
 	 * 	push a point to matrix
 	 */
-	public void pushPoint(RecordPoint point){
+	public void pushPoint(Integer pointID){
 		// first,push this point to pool
 		
-		if(point.isBackGround() == true)		// skip background point.
+		if(RecordPointUtil.isBackGround(pointID) == true)		// skip background point.
 			return;
 		
-		points.add(point);
-		
 		// second, calculate the distance from this point,and add it to matrix if the distance is smaller then e
-		for(RecordPoint oldPoint:points){
-			if(oldPoint.ID == point.ID)
-				continue;
-			double distance = RecordPoint.calculateDiscance(oldPoint, point, width, height);
+		for(int id = 0 ; id < pointID ; id ++){
+//			if(oldPoint.ID == point.ID)
+//				continue;
+			double distance = RecordPointUtil.calculateDiscance(id, pointID, width, height);
 			if(e_distance > distance){
 				// double add
 				//System.out.println("dis:" + distance);
-				addPoint(oldPoint,point);
-				addPoint(point,oldPoint);
+				addPoint(id,pointID);
+				addPoint(pointID,id);
 			}
 		}
+		
+		points.add(pointID);
 	}
 	
 	
@@ -98,26 +86,23 @@ public class PointMatrix {
 	 */
 	public void joinCorePoint(){
 		// dye all the core point
-		for(RecordPoint corePoint:corePointList){
-			int rgb = corePoint.getRGB();
-			if(corePoint.cls == RecordPoint.DEFAULT_CLUSTER){	// lonely core point
-				corePoint.cls = clusterID ++;
+		for(Integer corePointID:corePointList){
+			int rgb = RecordPointUtil.getRGB(corePointID);
+			if(RecordPointUtil.getDynCount(corePointID) == 0){	// lonely core point
 				rgb = generateRandomRGB();
 			}
-			dyeing(corePoint,rgb);
+			dyeing(corePointID,rgb);
 		}
 	}
 	/**
 	 * @param core
 	 * 	dye all the core object by core point
 	 */
-	private void dyeing(RecordPoint corePoint,int rgb){
-		int coreCluster = corePoint.cls;
-		corePoint.setRGB(rgb);		
-		ArrayList<RecordPoint> neighborPoints = matrix.get(corePoint);
-		for(RecordPoint neighborPoint:neighborPoints){
-			neighborPoint.cls = coreCluster;
-			neighborPoint.setRGB(rgb);
+	private void dyeing(Integer corePointID,int rgb){
+		RecordPointUtil.setRGB(corePointID, rgb);	
+		ArrayList<Integer> neighborPoints = matrix.get(corePointID);
+		for(Integer neighborPointID:neighborPoints){
+			RecordPointUtil.setRGB(neighborPointID, rgb);
 		}
 	}
 	
@@ -160,15 +145,9 @@ public class PointMatrix {
 	}
 	
 	public int generateRandomRGB(){
-		
-//		if(backgroud_flag == 0){
-//			backgroud_flag = 1;
-//			return 0xffffffff;
-//		}
-		
-		int r = (int) Math.round(Math.random()/1.0 *255);
-		int g = (int) Math.round(Math.random()/1.0 *255);
-		int b = (int) Math.round(Math.random()/1.0 *255);
+		int r = (int) Math.round(Math.random()/1.0 *235+10);	// (10~245)
+		int g = (int) Math.round(Math.random()/1.0 *235+10);
+		int b = (int) Math.round(Math.random()/1.0 *235+10);
 		int rgb = 0xff000000;
 		
 		rgb |= ((r << 16) & 0xff0000);
